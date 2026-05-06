@@ -24,3 +24,6 @@ output/
 outputs/
 reports/outputs/
 training_progress.png
+
+# Preserve nested-repo metadata locally without committing it
+**/.git.nested-backup/
