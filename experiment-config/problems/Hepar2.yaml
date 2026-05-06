@@ -1,0 +1,16 @@
+name: hepar2
+description: Prepare the Hepar2 dataset from the GUIDE source.
+domain: causal_discovery
+
+paths:
+  raw_dir: /Users/xiaoyuhe/Causal-LLM/dataset/raw/hepar2
+  processed_dir: /Users/xiaoyuhe/Causal-LLM/dataset/processed/hepar2
+  preparer: /Users/xiaoyuhe/Causal-LLM/scripts/data/preprocessing.py
+
+data:
+  input_format: npy
+  x_file: data.npy
+  graph_file: adj.npy
+
+commands:
+  - python3 /Users/xiaoyuhe/Causal-LLM/scripts/data/preprocessing.py --dataset hepar2 --raw-root /Users/xiaoyuhe/Causal-LLM/dataset/raw --processed-root /Users/xiaoyuhe/Causal-LLM/dataset/processed

@@ -1,0 +1,6 @@
+name: data_assist
+method: DataAssist
+llm_model: gpt-4-turbo
+pc_variant: stable
+use_llm_prior: true
+score_output: pc_causal_matrix_eval.json

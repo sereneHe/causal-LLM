@@ -1,0 +1,14 @@
+name: unified_one_shot
+method: UnifiedOneShot
+causal_llm_model_path: llm_model.pth
+rl_nb_epoch: 100
+icalingam_max_iter: 10000
+icalingam_thresh: 0.1
+grandag_iterations: 1000
+enabled_models:
+  - causal_llm
+  - RL
+  - ICALiNGAM
+  - GraNDAG
+  - GES
+  - PC

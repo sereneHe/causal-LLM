@@ -1,0 +1,17 @@
+name: LEGAL
+description: Prepare all LEGAL dataset variants.
+domain: causal_discovery
+
+paths:
+  raw_dir: /Users/xiaoyuhe/Causal-LLM/dataset/raw/LEGAL
+  processed_dir: /Users/xiaoyuhe/Causal-LLM/dataset/processed/LEGAL
+  preparer: /Users/xiaoyuhe/Causal-LLM/scripts/data/preprocessing.py
+
+data:
+  input_format: npy
+  x_file: data.npy
+  graph_file: adj.npy
+  output_glob: /Users/xiaoyuhe/Causal-LLM/dataset/processed/LEGAL/*/data.npy
+
+commands:
+  - python3 /Users/xiaoyuhe/Causal-LLM/scripts/data/preprocessing.py --dataset LEGAL --raw-root /Users/xiaoyuhe/Causal-LLM/dataset/raw --processed-root /Users/xiaoyuhe/Causal-LLM/dataset/processed

@@ -1,0 +1,10 @@
+name: guide
+method: GUIDE
+hidden_dim: 64
+nheads: 8
+num_epochs: 10
+actor_lr: 0.001
+batch_size: 64
+prior_fraction: 0.25
+save_model: false
+verbose: false

@@ -1,0 +1,8 @@
+[console_scripts]
+prepare-causal-problem = src.data.preprocessing:main
+run-all-baselines = src.utils.problem_benchmark:main
+run-dataassist = src.utils.run_methods:run_dataassist_main
+run-guide = src.utils.run_methods:run_guide_main
+run-kcrl = src.utils.run_methods:run_kcrl_main
+run-problem-config = src.run_experiment:main
+run-unifiedoneshot = src.utils.run_methods:run_unified_main

@@ -1,0 +1,12 @@
+name: kcrl
+method: KCRL
+max_length: 8
+data_size: 1000
+score_type: BIC
+reg_type: LR
+normalize: false
+transpose: false
+lambda_flag_default: true
+nb_epoch: 10000
+input_dimension: 64
+lambda_iter_num: 1000

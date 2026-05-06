@@ -1,0 +1,46 @@
+Metadata-Version: 2.4
+Name: causal-llm
+Version: 0.1.0
+Summary: Unified preprocessing and baseline runners for causal discovery experiments.
+Requires-Python: <3.12,>=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: arxiv
+Requires-Dist: bnlearn==0.4.8
+Requires-Dist: cdt>=0.5.0
+Requires-Dist: gcastle>=1.0.0
+Requires-Dist: GPy>=1.13.2
+Requires-Dist: h5py
+Requires-Dist: langchain
+Requires-Dist: matplotlib>=3.4.0
+Requires-Dist: networkx>=2.6.0
+Requires-Dist: numpy>=1.21.0
+Requires-Dist: openai
+Requires-Dist: openpyxl>=3.1.2
+Requires-Dist: pandas>=1.3.0
+Requires-Dist: pytz>=2019.3
+Requires-Dist: pyyaml>=5.3
+Requires-Dist: scikit-learn>=1.0.0
+Requires-Dist: scipy>=1.7.0
+Requires-Dist: tensorflow>=2.20.0
+Requires-Dist: torch>=2.0.0
+Requires-Dist: tqdm>=4.62.0
+Requires-Dist: transformers>=4.30.0
+
+# causal-llm
+
+Unified preprocessing and baseline runners for causal discovery experiments.
+
+## SmBFO variable mapping
+
+The original SmBFO notebook uses the following physical-symbol labels, which
+map to the standardized variable names used in this repo:
+
+| Notebook label | Repo variable |
+| --- | --- |
+| `$I_{14}$` | `Alkali_Cations` |
+| `$I_5$` | `Transition_Metal_Cations` |
+| `a` | `Lattice_Parameter` |
+| `c` | `Composition` |
+| `α` | `Unit_Cell_Angle` |
+| `Vol` | `Volume` |
+| `$P_x$` | `In_Plane_Polarization` |

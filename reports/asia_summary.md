@@ -1,0 +1,3 @@
+| problem | method | status | variant | tpr | fdr | shd | precision | recall | f1 | accuracy | tp | fp | tn | fn | fpr | tnr | fnr | nnz | artifact | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| asia | UnifiedOneShot | ok |  | 0.625 | 0.4444444444444444 | 5 |  |  |  |  |  |  |  |  | 0.2 |  |  | 9 | /Users/xiaoyuhe/Causal-LLM/reports/outputs/UnifiedOneShot/asia/adj_combined_results.csv |  |

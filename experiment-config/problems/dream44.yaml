@@ -1,0 +1,16 @@
+name: dream44
+description: Prepare the DREAM4-4 benchmark dataset.
+domain: causal_discovery
+
+paths:
+  raw_dir: /Users/xiaoyuhe/Causal-LLM/dataset/raw/dream44
+  processed_dir: /Users/xiaoyuhe/Causal-LLM/dataset/processed/dream44
+  preparer: /Users/xiaoyuhe/Causal-LLM/scripts/data/preprocessing.py
+
+data:
+  input_format: npy
+  x_file: data.npy
+  graph_file: adj.npy
+
+commands:
+  - python3 /Users/xiaoyuhe/Causal-LLM/scripts/data/preprocessing.py --dataset dream44 --raw-root /Users/xiaoyuhe/Causal-LLM/dataset/raw --processed-root /Users/xiaoyuhe/Causal-LLM/dataset/processed

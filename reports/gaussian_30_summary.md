@@ -1,0 +1,3 @@
+| problem | method | status | variant | tpr | fdr | shd | precision | recall | f1 | accuracy | tp | fp | tn | fn | fpr | tnr | fnr | nnz | artifact | note |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| gaussian_30 | GUIDE | ok |  | 0.06637168141592921 | 0.7222222222222222 | 235 | 0.38461538461538464 | 0.06637168141592921 | 0.11320754716981134 | 0.45977011494252873 | 15 | 24 | 185.0 | 211 | 0.18660287081339713 | 0.8851674641148325 | 0.9336283185840708 | 54 | /Users/xiaoyuhe/Causal-LLM/reports/outputs/GUIDE/gaussian_30/results_custom.npy |  |

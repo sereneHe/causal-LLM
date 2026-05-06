@@ -1,0 +1,26 @@
+.tmp_*
+*.tmp
+
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+.DS_Store
+
+# Secrets / local env (do not commit)
+.env
+.env.local
+.env.*.local
+.direnv/
+.envrc
+
+# Local Python environment
+.venv/
+
+# Large local data and generated outputs
+dataset/
+output/
+outputs/
+reports/outputs/
+training_progress.png

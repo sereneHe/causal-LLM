@@ -1,0 +1,16 @@
+name: non_gaussian_50
+description: Prepare the GUIDE synthetic non-Gaussian 50-node dataset.
+domain: causal_discovery
+
+paths:
+  raw_dir: /Users/xiaoyuhe/Causal-LLM/dataset/raw/non_gaussian_50
+  processed_dir: /Users/xiaoyuhe/Causal-LLM/dataset/processed/non_gaussian_50
+  preparer: /Users/xiaoyuhe/Causal-LLM/scripts/data/preprocessing.py
+
+data:
+  input_format: npy
+  x_file: data.npy
+  graph_file: adj.npy
+
+commands:
+  - python3 /Users/xiaoyuhe/Causal-LLM/scripts/data/preprocessing.py --dataset non_gaussian_50 --raw-root /Users/xiaoyuhe/Causal-LLM/dataset/raw --processed-root /Users/xiaoyuhe/Causal-LLM/dataset/processed

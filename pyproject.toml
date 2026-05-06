@@ -1,0 +1,52 @@
+[project]
+name = "causal-llm"
+version = "0.1.0"
+description = "Unified preprocessing and baseline runners for causal discovery experiments."
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "arxiv",
+  "bnlearn==0.4.8",
+  "cdt>=0.5.0",
+  "gcastle>=1.0.0",
+  "GPy>=1.13.2",
+  "h5py",
+  "langchain",
+  "matplotlib>=3.4.0",
+  "networkx>=2.6.0",
+  "numpy>=1.21.0",
+  "openai",
+  "openpyxl>=3.1.2",
+  "pandas>=1.3.0",
+  "pytz>=2019.3",
+  "pyyaml>=5.3",
+  "scikit-learn>=1.0.0",
+  "scipy>=1.7.0",
+  "tensorflow>=2.20.0",
+  "torch>=2.0.0",
+  "tqdm>=4.62.0",
+  "transformers>=4.30.0",
+]
+
+[dependency-groups]
+dev = [
+  "pre-commit>=4.1",
+  "ruff>=0.14.5",
+]
+
+[project.scripts]
+prepare-causal-problem = "src.data.preprocessing:main"
+run-problem-config = "src.run_experiment:main"
+run-dataassist = "src.utils.run_methods:run_dataassist_main"
+run-guide = "src.utils.run_methods:run_guide_main"
+run-kcrl = "src.utils.run_methods:run_kcrl_main"
+run-unifiedoneshot = "src.utils.run_methods:run_unified_main"
+run-all-baselines = "src.utils.problem_benchmark:main"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+ignore = ["E501"]

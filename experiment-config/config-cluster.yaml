@@ -1,0 +1,40 @@
+tracking: mlflow
+plot: false
+plot_dpi: 300
+skip_first: 0
+
+runtime:
+  python_exec: python3
+  reports_dir: /Users/xiaoyuhe/Causal-LLM/reports
+  outputs_dir: /Users/xiaoyuhe/Causal-LLM/reports/outputs
+  kmp_duplicate_lib_ok: true
+
+methods:
+  DataAssist:
+    enabled: true
+    problem: SmBFO
+    output_dir: /Users/xiaoyuhe/Causal-LLM/reports/outputs/DataAssist/SmBFO
+
+  GUIDE:
+    enabled: true
+    problem: gaussian_30
+    output_dir: /Users/xiaoyuhe/Causal-LLM/reports/outputs/GUIDE/gaussian_30
+    num_epochs: 1
+    hidden_dim: 64
+    nheads: 8
+    actor_lr: 0.001
+    prior_fraction: 0.25
+
+  KCRL:
+    enabled: true
+    problem: asia
+    output_dir: /Users/xiaoyuhe/Causal-LLM/reports/outputs/KCRL/asia
+    nb_epoch: 1
+    input_dimension: 64
+    lambda_iter_num: 10
+
+  UnifiedOneShot:
+    enabled: true
+    problem: asia
+    output_dir: /Users/xiaoyuhe/Causal-LLM/reports/outputs/UnifiedOneShot/asia
+    enabled_models: PC
