@@ -1,0 +1,25 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "containerAppsEnvironmentName": {
+      "value": "${AZURE_CONTAINER_ENVIRONMENT_NAME}"
+    },
+    "containerRegistryLoginServer": {
+      "value": "${AZURE_CONTAINER_REGISTRY_ENDPOINT}"
+    },
+    "imageName": {
+      "value": "${SERVICE_RUNNER_IMAGE_NAME}"
+    },
+    "userAssignedIdentityResourceId": {
+      "value": "${SERVICE_RUNNER_IDENTITY_ID}"
+    },
+    "tags": {
+      "value": {
+        "workload": "causal-llm",
+        "environment": "${AZURE_ENV_NAME}",
+        "managedBy": "azd"
+      }
+    }
+  }
+}

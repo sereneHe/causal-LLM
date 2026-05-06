@@ -1,0 +1,14 @@
+name: causal-llm-workshop
+metadata:
+  template: causal-llm-workshop@0.1.0
+infra:
+  provider: bicep
+  path: infra
+services:
+  runner:
+    project: .
+    host: containerapp
+    language: docker
+    module: runner
+    docker:
+      path: Dockerfile

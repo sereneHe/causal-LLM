@@ -1,6 +1,5 @@
 import numpy as np
 from castle.algorithms import RL, GraNDAG, GES, PC, ICALiNGAM
-from causal_llm import CausalDiscoveryLLM
 import pandas as pd
 from config_models import config
 
@@ -10,6 +9,9 @@ def initialize_models(input_dim, enabled_models=None):
 
     # Initialize causal_llm if present in config
     if "causal_llm" in config and "causal_llm" in enabled:
+        # Lazy import keeps lighter model-only runs from requiring torch/transformers.
+        from causal_llm import CausalDiscoveryLLM
+
         causal_llm_config = config["causal_llm"]
         output_dim = causal_llm_config["output_dim"](input_dim) 
         models["causal_llm"] = CausalDiscoveryLLM(

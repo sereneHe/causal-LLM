@@ -2,6 +2,25 @@
 
 Unified preprocessing and baseline runners for causal discovery experiments.
 
+## Azure workshop
+
+This repository now includes an Azure Developer CLI (azd) workshop scaffold for provisioning shared cloud infrastructure.
+
+- azd project file: `azure.yaml`
+- Infrastructure as code: `infra/main.bicep`
+- Parameter defaults: `infra/main.parameters.json`
+- End-to-end deployment guide: `AZURE_WORKSHOP.md`
+
+To get started quickly:
+
+```bash
+azd env new causal-llm-dev
+azd env set AZURE_LOCATION eastus2
+azd provision --preview
+azd provision
+azd deploy runner
+```
+
 ## Secrets (Keychain / direnv / .env)
 
 This repo is set up to load credentials via `direnv` from either a local `.env` (gitignored) or macOS Keychain.

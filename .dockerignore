@@ -1,0 +1,13 @@
+.git
+.gitignore
+.devcontainer
+old
+reports
+infra
+AZURE_WORKSHOP.md
+uv.lock
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+**/*.ipynb
