@@ -1,0 +1,16 @@
+name: mildew
+description: Prepare the Mildew benchmark dataset.
+domain: causal_discovery
+
+paths:
+  raw_dir: /Users/xiaoyuhe/Causal-LLM/dataset/raw/mildew
+  processed_dir: /Users/xiaoyuhe/Causal-LLM/dataset/processed/mildew
+  preparer: /Users/xiaoyuhe/Causal-LLM/scripts/data/preprocessing.py
+
+data:
+  input_format: npy
+  x_file: data.npy
+  graph_file: adj.npy
+
+commands:
+  - python3 /Users/xiaoyuhe/Causal-LLM/scripts/data/preprocessing.py --dataset mildew --raw-root /Users/xiaoyuhe/Causal-LLM/dataset/raw --processed-root /Users/xiaoyuhe/Causal-LLM/dataset/processed

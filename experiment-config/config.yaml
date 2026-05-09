@@ -1,0 +1,106 @@
+hydra:
+  launcher:
+    n_jobs: 1
+    prefer: processes
+#    prefer: processes # use processes instead of threads
+#    backend: multiprocessing # use multiprocessing backend instead of loky
+  sweeper:
+    params:
+#      max_batch_size: 1
+      #scenario:
+      #distribution_coefficient: 1,2,3,4
+experiment: DAGS article
+tracking: mlflow
+plot: true
+plot_dpi: [50, 300]
+skip_first: 0
+all_problems: &all_problems
+  - BIAS
+  - Hepar2
+  - LEGAL
+  - Lucas
+  - Oxygen-therapy
+  - SmBFO
+  - admissions
+  - alarm
+  - asia
+  - barley
+  - bowfree_admg
+  - cds
+  - codiet
+  - codiet_restricted
+  - dream41
+  - dream42
+  - dream43
+  - dream44
+  - dynamic-er
+  - er
+  - ermag
+  - gaussian_30
+  - gaussian_50
+  - insurance
+  - krebs_cycle_1
+  - krebs_cycle_3
+  - krebs_cycle_normalised_1
+  - krebs_cycle_normalised_3
+  - mildew
+  - non_gaussian_30
+  - non_gaussian_50
+  - sachs
+  - sf
+  - water
+methods:
+  - name: DataAssist
+    enabled: true
+    problems: *all_problems
+
+  - name: GUIDE
+    enabled: true
+    problems: *all_problems
+    num_epochs: 10
+    hidden_dim: 64
+    nheads: 8
+    actor_lr: 0.001
+    prior_fraction: 0.25
+
+  - name: KCRL
+    enabled: true
+    problems: *all_problems
+    nb_epoch: 10000
+    input_dimension: 64
+    lambda_iter_num: 1000
+
+  - name: UnifiedOneShot
+    enabled: true
+    problems: *all_problems
+    enabled_models:
+      - PC
+
+  - name: JunctionTreeGap
+    enabled: true
+    problems: *all_problems
+    top_k: 3
+    gap_weight: 0.5
+    sparsity_threshold: 0.0
+    edge_threshold: 0.0
+    covariance_jitter: 1e-6
+    gap_metric: sym_kl
+    separator_model: gaussian
+
+  - name: LLM_CaMML
+    enabled: true
+    problems: *all_problems
+    backend: CaMML
+    conf: 0.99999
+
+  - name: LLM_MINOBSx
+    enabled: true
+    problems: *all_problems
+    backend: MINOBSx
+    timeout: ""
+
+defaults:
+  - solver: milp
+  - problem: path
+  - override hydra/launcher: joblib
+  - _self_

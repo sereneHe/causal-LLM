@@ -25,7 +25,7 @@ The module provides a comprehensive framework for:
 ### Demo and Documentation
 
 - **`run.ipynb`**: Jupyter notebook demonstrating model usage and evaluation
-- **`requirements.txt`**: Python dependencies specific to this module
+- Python dependencies are consolidated in the repository root **`requirements.txt`**.
 
 ## Key Components
 
@@ -139,9 +139,25 @@ results = train_models(models, data, dataset_type="gaussian",
 - Maintains causal structure while reducing noise
 
 ### 3. Flexible Architecture
-- Supports multiple LLM backends (LLaMA, GPT, Gemma, DeepSeek)
+- Supports multiple LLM backbones through Hugging Face Transformers:
+  - `Llama`
+  - `GPT2`
+  - `GPTNeoX`
+  - `Gemma`
+  - `DeepseekV3`
+- Select the causal LLM backbone through the `--causal-llm-backbone` flag in `main_runner.py`
 - Configurable model parameters
 - Easy addition of new causal discovery algorithms
+
+Example:
+
+```bash
+python main_runner.py \
+  --ground-truth-path path/to/adj.csv \
+  --gaussian-path path/to/samples.csv \
+  --enabled-models PC,causal_llm \
+  --causal-llm-backbone GPTNeoX
+```
 
 ### 4. Comprehensive Evaluation
 - Multiple evaluation metrics
@@ -216,4 +232,3 @@ When adding new models:
 3. Update `initialize_models()` function
 4. Add evaluation metrics if needed
 5. Update documentation
-

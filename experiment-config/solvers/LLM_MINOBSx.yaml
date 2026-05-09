@@ -1,0 +1,15 @@
+name: llm_minobsx
+method: LLM_MINOBSx
+backend: MINOBSx
+sizes:
+  admissions: "60"
+  codiet: "140"
+  dynamic-er: "100"
+  asia: "250"
+  child: "500"
+  insurance: "500"
+  alarm: "1000"
+  cancer: "250"
+  mildew: "8000"
+  water: "1000"
+  barley: "2000"

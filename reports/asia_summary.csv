@@ -1,2 +1,7 @@
-problem,method,status,variant,tpr,fdr,shd,precision,recall,f1,accuracy,tp,fp,tn,fn,fpr,tnr,fnr,nnz,artifact,note
-asia,UnifiedOneShot,ok,,0.625,0.4444444444444444,5,,,,,,,,,0.2,,,9,/Users/xiaoyuhe/Causal-LLM/reports/outputs/UnifiedOneShot/asia/adj_combined_results.csv,
+problem,method,shd,f1,sid,dag_threshold,iter_num,precision,recall,fdr,fpr,tnr,fnr,accuracy,tp,fp,tn,fn,nnz,n_nodes,extra,missing,reverse,gscore,time,statisfy,ancs_statisfy,abs_edge_statisfy,abs_edge_notstatisfy
+asia,DataAssist,7.0,0.5882352941176471,23.0,,,0.5555555555555556,0.625,0.4444444444444444,0.07142857142857142,0.9285714285714286,0.375,0.890625,5.0,4.0,52.0,3.0,9.0,8.0,,,,,,,,,
+asia,KCRL,8.0,0.0,29.0,,,1.0,0.0,0.0,0.0,1.0,1.0,,,,,,0.0,,,,,,,,,,
+asia,UnifiedOneShot,5.0,0.5882352941176471,23.0,,,0.5555555555555556,0.625,0.4444444444444444,0.2,0.8,0.375,,,,,,9.0,,,,,,,,,,
+asia,JunctionTreeGap,24.0,0.3333333333333333,19.0,0.0,1.0,0.21428571428571427,0.75,0.7857142857142857,0.39285714285714285,0.6071428571428571,0.25,0.625,6.0,22.0,34.0,2.0,28.0,,,,,,,,,,
+asia,LLM_CaMML,0.0,1.0,,,,1.0,1.0,0.0,0.0,1.0,0.0,1.0,8.0,0.0,56.0,0.0,8.0,8.0,0.0,0.0,0.0,1.0,9.261026859283447,9.0,,,
+asia,LLM_MINOBSx,8.0,0.0,,,,0.0,0.0,0.0,0.0,1.0,1.0,0.875,0.0,0.0,56.0,8.0,0.0,8.0,0.0,8.0,0.0,0.0,0.04559206962585449,,0.0,0.0,0.0

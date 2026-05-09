@@ -1,0 +1,49 @@
+Running 64 bit version
+Using Sun's standard random number generator.
+Using priors: arcs{
+v0 => v1 0.99999;
+v1 => v5 0.99999;
+v1 => v7 0.99999;
+v2 => v3 0.99999;
+v2 => v4 0.99999;
+v3 => v5 0.99999;
+v3 => v7 0.99999;
+v4 => v7 0.99999;
+v5 => v6 0.99999;
+}
+Metropolis search : ML Model Glue  = CPTLearner(MLMultinomialLearner)
+Metropolis search : MML Model Glue = CPTLearner(AdaptiveCodeLearner(0.5,mml=true))
+Metropolis search : TomCoster = camml.core.search.TOMCoster$UniformTOMCoster@3fb4f649
+Setting TOMCoster: camml.plugin.tomCoster.ExpertElicitedTOMCoster@e2d56bf
+ -- Learning Bayesian Network -- 
+Setting arcProb = 0.5
+RNG = Java. Seed: -1557758834
+Sampling 200000 TOMs
+10000 data points from 8 variables.
+Estimating arcProb
+Null cost = 29935.95974896746
+012345678901234567890123456789012
+IFFFFFFFFFFCCCCCCCCCCAAAAAAAAAAAA
+arcProb = 0.5
+0123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890123456789
+....................................................................................................
+.
+
+Search finished... 200001 loops
+
+
+===================================
+----- Generating Results -----
+total weight kept : 55233.5190272998
+total weight ignored : 0.0
+14 unique SECs sampled
+Calculting KL distance from 2 highest posterior SECs (14 kept)
+Total posterior used = 0.9999 highest Posterior SEC = 0.8737
+Calculating relative priors.
+Joining by KL distance
+01
+XX
+Joining model 0 and 1	[0.8737 + 0.1263 = 0.9999]
+
+
+Saving to 'output/asia_250_1.dne'

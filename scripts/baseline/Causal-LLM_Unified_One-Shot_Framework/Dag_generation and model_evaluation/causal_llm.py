@@ -1,16 +1,28 @@
+import os
+
+import networkx as nx
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import numpy as np
-from transformers import LlamaModel, LlamaConfig
+from sklearn.linear_model import LinearRegression
 from tqdm import tqdm
-import os
-from transformers import GPT2Model, GPT2Config
-from transformers import AutoModelForCausalLM,AutoConfig
+from transformers import (
+    DeepseekV3Config,
+    DeepseekV3Model,
+    GemmaConfig,
+    GemmaModel,
+    GPT2Config,
+    GPT2Model,
+    GPTNeoXConfig,
+    GPTNeoXModel,
+    LlamaConfig,
+    LlamaModel,
+)
 
 class CausalDiscoveryLLM:
-    def __init__(self, input_dim, output_dim, model_path=None):
-        self.model = CausalDiscoveryModel(input_dim, output_dim)
+    def __init__(self, input_dim, output_dim, model_path=None, backbone="Llama"):
+        self.model = CausalDiscoveryModel(input_dim, output_dim, backbone=backbone)
         self.optimizer = optim.Adam(self.model.parameters(), lr=2e-5)
         self.criterion = nn.BCELoss()
         self.model_path = model_path
@@ -98,24 +110,14 @@ class CausalDiscoveryLLM:
 
 
 class CausalDiscoveryModel(nn.Module):
-    def __init__(self, input_dim, output_dim):
+    def __init__(self, input_dim, output_dim, backbone="Llama"):
         super(CausalDiscoveryModel, self).__init__()
 
-        # LLaMA configuration
-        self.config = LlamaConfig(
-            hidden_size=512,
-            intermediate_size=1024,
-            num_hidden_layers=8,
-            num_attention_heads=8,
-            max_position_embeddings=512,
-            vocab_size=32000  # Adjust based on your needs
-        )
+        self.backbone_name = backbone.lower()
+        self.config, self.backbone = self._build_backbone(self.backbone_name)
 
-        # Initialize LLaMA model
-        self.llama = LlamaModel(self.config) # Any LLM can be used (Llama,GPT,Gemma,DeepSeek)
-
-        # Freeze all parameters of the LLaMA model
-        for param in self.llama.parameters():
+        # Freeze all parameters of the backbone model.
+        for param in self.backbone.parameters():
             param.requires_grad = False
 
         # Input projection
@@ -129,14 +131,111 @@ class CausalDiscoveryModel(nn.Module):
         x = x.to(torch.float32)  # Ensure input is float32
         x = self.input_projection(x)
 
-        # Pass through LLaMA
-        outputs = self.llama(inputs_embeds=x)
+        # Pass through the selected LLM backbone.
+        outputs = self.backbone(inputs_embeds=x)
         hidden_states = outputs.last_hidden_state
 
         # Output projection
         output = self.output_projection(hidden_states)
 
         return output
+
+    @staticmethod
+    def _build_backbone(backbone_name: str):
+        hidden_size = 512
+        intermediate_size = 1024
+        num_layers = 8
+        num_heads = 8
+        max_positions = 512
+        vocab_size = 32000
+
+        if backbone_name == "llama":
+            config = LlamaConfig(
+                hidden_size=hidden_size,
+                intermediate_size=intermediate_size,
+                num_hidden_layers=num_layers,
+                num_attention_heads=num_heads,
+                max_position_embeddings=max_positions,
+                vocab_size=vocab_size,
+                pad_token_id=0,
+            )
+            return config, LlamaModel(config)
+
+        if backbone_name in {"gpt", "gpt2"}:
+            config = GPT2Config(
+                n_embd=hidden_size,
+                n_inner=intermediate_size,
+                n_layer=num_layers,
+                n_head=num_heads,
+                n_positions=max_positions,
+                vocab_size=vocab_size,
+                pad_token_id=0,
+            )
+            return config, GPT2Model(config)
+
+        if backbone_name in {"gptneox", "gpt_neox"}:
+            config = GPTNeoXConfig(
+                hidden_size=hidden_size,
+                intermediate_size=intermediate_size,
+                num_hidden_layers=num_layers,
+                num_attention_heads=num_heads,
+                max_position_embeddings=max_positions,
+                vocab_size=vocab_size,
+                pad_token_id=0,
+                tie_word_embeddings=False,
+                attention_bias=False,
+            )
+            return config, GPTNeoXModel(config)
+
+        if backbone_name == "gemma":
+            config = GemmaConfig(
+                hidden_size=hidden_size,
+                intermediate_size=intermediate_size,
+                num_hidden_layers=num_layers,
+                num_attention_heads=num_heads,
+                num_key_value_heads=num_heads,
+                head_dim=hidden_size // num_heads,
+                max_position_embeddings=max_positions,
+                vocab_size=vocab_size,
+                pad_token_id=0,
+                bos_token_id=1,
+                eos_token_id=2,
+                tie_word_embeddings=False,
+            )
+            return config, GemmaModel(config)
+
+        if backbone_name in {"deepseekv3", "deepseek_v3"}:
+            config = DeepseekV3Config(
+                hidden_size=hidden_size,
+                intermediate_size=intermediate_size,
+                moe_intermediate_size=256,
+                num_hidden_layers=num_layers,
+                num_attention_heads=num_heads,
+                num_key_value_heads=num_heads,
+                n_shared_experts=1,
+                n_routed_experts=4,
+                routed_scaling_factor=2.5,
+                kv_lora_rank=64,
+                q_lora_rank=64,
+                qk_rope_head_dim=64,
+                v_head_dim=64,
+                qk_nope_head_dim=64,
+                n_group=2,
+                topk_group=1,
+                num_experts_per_tok=1,
+                first_k_dense_replace=1,
+                max_position_embeddings=max_positions,
+                vocab_size=vocab_size,
+                pad_token_id=0,
+                bos_token_id=1,
+                eos_token_id=2,
+                tie_word_embeddings=False,
+            )
+            return config, DeepseekV3Model(config)
+
+        raise ValueError(
+            "Unsupported backbone. Choose one of: Llama, GPT2, GPTNeoX, Gemma, DeepseekV3."
+        )
 
 
 class GraphEnvironment:

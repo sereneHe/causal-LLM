@@ -24,7 +24,7 @@ CDF-RAG/
 ├── main/                 # Pipeline runner and ablation experiments
 ├── figs/                 # Key figures from paper (use .png for rendering)
 ├── config.py             # Centralized configuration & env variables
-├── requirements.txt      # Python dependencies
+├── ../../requirements.txt      # Consolidated Python dependencies
 └── README.md             # You're here
 ```
 
@@ -37,7 +37,7 @@ CDF-RAG/
 ```bash
 git clone https://github.com/elakhatibi/CDF-RAG.git
 cd CDF-RAG
-pip install -r requirements.txt
+pip install -r ../../requirements.txt
 ```
 
 ### Environment Setup

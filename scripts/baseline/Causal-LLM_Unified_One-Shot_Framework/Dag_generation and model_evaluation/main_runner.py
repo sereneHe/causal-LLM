@@ -16,6 +16,7 @@ def main(
     extra_adj_matrix_path=None,
     output_dir=None,
     enabled_models=None,
+    causal_llm_backbone=None,
 ):
     ground_truth_name = os.path.splitext(os.path.basename(ground_truth_path))[0]
     ground_truth, gaussian_samples, non_gaussian_samples, node_labels = load_data(
@@ -36,7 +37,9 @@ def main(
     try:
         if gaussian_samples is not None:
             models_g = initialize_models(
-                gaussian_samples.shape[1], enabled_models=enabled_models
+                gaussian_samples.shape[1],
+                enabled_models=enabled_models,
+                causal_llm_backbone=causal_llm_backbone,
             )
             combined_results['g'] = train_models(
                 models_g, gaussian_samples, 'g', node_labels, ground_truth_name
@@ -44,7 +47,9 @@ def main(
 
         if non_gaussian_samples is not None:
             models_ng = initialize_models(
-                non_gaussian_samples.shape[1], enabled_models=enabled_models
+                non_gaussian_samples.shape[1],
+                enabled_models=enabled_models,
+                causal_llm_backbone=causal_llm_backbone,
             )
             combined_results['ng'] = train_models(
                 models_ng, non_gaussian_samples, 'ng', node_labels, ground_truth_name
@@ -70,6 +75,11 @@ def parse_args():
         default="PC",
         help="Comma-separated model names, e.g. PC,GES or PC only.",
     )
+    parser.add_argument(
+        "--causal-llm-backbone",
+        default="Llama",
+        help="Backbone for the causal_llm model: Llama, GPT2, GPTNeoX, Gemma, DeepseekV3.",
+    )
     return parser.parse_args()
 
 
@@ -83,5 +93,6 @@ if __name__ == "__main__":
         extra_adj_matrix_path=args.extra_adj_matrix_path,
         output_dir=args.output_dir,
         enabled_models=enabled_models,
+        causal_llm_backbone=args.causal_llm_backbone,
     )
 

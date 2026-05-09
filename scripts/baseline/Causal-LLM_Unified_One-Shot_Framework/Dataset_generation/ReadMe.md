@@ -23,7 +23,7 @@ The dataset generation module enables researchers to:
 ### Demo and Documentation
 
 - **`run.ipynb`**: Jupyter notebook demonstrating dataset generation
-- **`requirements.txt`**: Python dependencies for this module
+- Python dependencies are consolidated in the repository root **`requirements.txt`**.
 - **`ReadMe.md`**: Basic module description
 
 ## Data Generation Methods

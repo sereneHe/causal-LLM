@@ -18,7 +18,7 @@ The framework rigorously evaluates the effectiveness of LLMs in causal discovery
 ```
 causal_llm/
 ├── README.md                           # Main project documentation
-├── requirements.txt                    # Python dependencies
+├── ../../../requirements.txt           # Consolidated Python dependencies
 ├── Dag_generation and model_evaluation/  # Model training and evaluation
 ├── Data/                              # Benchmark datasets
 └── Dataset_generation/                # Synthetic data generation tools
@@ -36,7 +36,7 @@ causal_llm/
 
 1. **Install Dependencies**:
    ```bash
-   pip install -r requirements.txt
+   pip install -r ../../../requirements.txt
    ```
 
 2. **Generate Synthetic Data**:

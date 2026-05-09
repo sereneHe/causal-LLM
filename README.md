@@ -15,6 +15,10 @@ Connectivity check (does not print the key):
 
 - `python3 scripts/utils/check_anthropic_foundry.py --max-tokens 8`
 
+Notes:
+- `https://ai.azure.com/...` (portal UI) and `https://<resource>.services.ai.azure.com/api/projects/...` (project management API) are **not** model inference endpoints.
+- For Azure inference, you typically need an endpoint ending in `/chat/completions` (OpenAI-compatible) or (if using Anthropic directly) `/v1/messages`.
+
 ## SmBFO variable mapping
 
 The original SmBFO notebook uses the following physical-symbol labels, which

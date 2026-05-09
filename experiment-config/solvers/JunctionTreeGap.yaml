@@ -1,0 +1,10 @@
+name: junction_tree_gap
+method: JunctionTreeGap
+top_k: 3
+gap_weight: 0.5
+sparsity_threshold: 0.0
+edge_threshold: 0.0
+covariance_jitter: 1e-6
+gap_metric: sym_kl
+clique_potential_model: gaussian
+separator_model: gaussian

@@ -1,0 +1,8 @@
+name: ilscsl
+method: ILSCSL
+alg: HC
+score: bdeu
+model: gpt-4
+data_index: 1
+datasize_index: 0
+llm_url: ""

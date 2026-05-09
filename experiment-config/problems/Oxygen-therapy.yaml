@@ -1,0 +1,16 @@
+name: Oxygen-therapy
+description: Prepare the KCRL Oxygen-therapy benchmark dataset.
+domain: causal_discovery
+
+paths:
+  raw_dir: /Users/xiaoyuhe/Causal-LLM/dataset/raw/Oxygen-therapy
+  processed_dir: /Users/xiaoyuhe/Causal-LLM/dataset/processed/Oxygen-therapy
+  preparer: /Users/xiaoyuhe/Causal-LLM/scripts/data/preprocessing.py
+
+data:
+  input_format: npy
+  x_file: data.npy
+  graph_file: adj.npy
+
+commands:
+  - python3 /Users/xiaoyuhe/Causal-LLM/scripts/data/preprocessing.py --dataset Oxygen-therapy --raw-root /Users/xiaoyuhe/Causal-LLM/dataset/raw --processed-root /Users/xiaoyuhe/Causal-LLM/dataset/processed

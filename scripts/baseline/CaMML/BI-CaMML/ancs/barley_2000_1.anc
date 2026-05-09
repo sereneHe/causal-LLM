@@ -1,0 +1,26 @@
+arcs{
+jordtype => potnmin 0.99999;
+jordtype => jordn 0.99999;
+nedbarea => nmin 0.99999;
+nmin => jordn 0.99999;
+nmin => mod_nmin 0.99999;
+forfrugt => nmin 0.99999;
+potnmin => ngodn 0.99999;
+pesticid => exptgens 0.99999;
+ngodnt => nopt 0.99999;
+ngodnn => ngodn 0.99999;
+saatid => exptgens 0.99999;
+saatid => dgv1059 0.99999;
+rokap => dgv1059 0.99999;
+nplac => ngtilg 0.99999;
+nplac => ntilg 0.99999;
+saamng => antplnt 0.99999;
+saamng => aks_vgt 0.99999;
+tkvs => sorttkv 0.99999;
+saakern => aks_m2 0.99999;
+partigerm => jordinf 0.99999;
+jordinf => udb 0.99999;
+keraks => saakern 0.99999;
+srtsize => ksort 0.99999;
+protein => srtprot 0.99999;
+}

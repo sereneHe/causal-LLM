@@ -23,7 +23,15 @@ dataset/
 output/
 outputs/
 reports/outputs/
+reports/*.csv
+reports/*.log
+reports/heatmap/
+reports/.post_create_done/
 training_progress.png
+tmp_proc/
+tmp_proc2/
+tmp_raw/
+tmp_raw2/
 
 # Preserve nested-repo metadata locally without committing it
 **/.git.nested-backup/

@@ -16,6 +16,7 @@ from sklearn.preprocessing import StandardScaler
 
 
 SRC_ROOT = Path(__file__).resolve().parents[3]
+REPO_ROOT = Path(__file__).resolve().parents[4]
 if str(SRC_ROOT) not in sys.path:
     sys.path.append(str(SRC_ROOT))
 
@@ -33,31 +34,30 @@ class DataGenerator(object):
         self.inputdata = loaded
         self.datasize, self.d = self.inputdata.shape
 
-        data_dir = "dataset/{}".format(
-            datetime.now(timezone("Asia/Hong_Kong")).strftime("%Y-%m-%d_%H-%M-%S-%f")[:-3]
-        )
-        create_dir(data_dir)
-
-        LogHelper.setup(log_path="{}/training.log".format(data_dir), level_str="INFO")
-
-        _logger = logging.getLogger(__name__)
-        _logger.info(print("Input data is \n", self.inputdata))
-
         if normalize_flag:
             self.inputdata = StandardScaler().fit_transform(self.inputdata)
-            _logger.info(print("In the NORMALIZE block \n"))
-            _logger.info(print("After normalizing \n", self.inputdata))
 
         if solution_path is None:
             gtrue = np.zeros(self.d)
         else:
             gtrue = load_graph_npy(solution_path, transpose=transpose_flag)
-            if transpose_flag:
-                _logger.info(print("After transposing \n", gtrue))
 
         # (i,j)=1 => node i -> node j
         self.true_graph = np.int32(np.abs(gtrue) > 1e-3)
-        _logger.info(print("True DAG absolutes values \n", self.true_graph))
+
+        data_dir = REPO_ROOT / "reports" / "tmp" / datetime.now(timezone("Asia/Hong_Kong")).strftime("%Y-%m-%d_%H-%M-%S-%f")[:-3]
+        create_dir(str(data_dir))
+
+        LogHelper.setup(log_path=str(data_dir / "training.log"), level_str="INFO")
+
+        _logger = logging.getLogger(__name__)
+        _logger.info("Input data is\n%s", self.inputdata)
+        if normalize_flag:
+            _logger.info("In the NORMALIZE block")
+            _logger.info("After normalizing\n%s", self.inputdata)
+        if transpose_flag:
+            _logger.info("After transposing\n%s", gtrue)
+        _logger.info("True DAG absolutes values\n%s", self.true_graph)
 
     def gen_instance_graph(self, max_length, dimension, test_mode=False):
         seq = np.random.randint(self.datasize, size=(dimension))

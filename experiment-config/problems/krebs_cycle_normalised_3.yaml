@@ -1,0 +1,13 @@
+name: krebs_cycle_normalised_3
+dataset_name: Krebs_Cycle_Normalised_3
+sample_index: 0
+time_start: 100
+time_end: 200
+single_time_step: null
+anm_features: 3
+anm_samples: 8
+heatmap:
+  ts_dir: Krebs_Cycle_Normalised_3_TS
+  true_graph_file: true_graph.npz
+  graph_file: null
+  output_dir: output/Results_Krebs_Cycle_Normalised_3/heatmap

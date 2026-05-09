@@ -2,7 +2,8 @@ config = {
     "causal_llm": {
         "input_dim": None,  
         "output_dim": lambda input_dim: input_dim * input_dim,
-        "model_path": "llm_model.pth"
+        "model_path": "llm_model.pth",
+        "backbone": "Llama",
     },
     "RL": {
         "nb_epoch": 100

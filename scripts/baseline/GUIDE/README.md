@@ -60,7 +60,7 @@ GUIDE is a novel framework for causal DAG discovery that synergizes generative k
 ### Install Dependencies
 
 ```bash
-pip install -r requirements.txt
+pip install -r ../../../requirements.txt
 ```
 
 ### Verify Installation
@@ -80,7 +80,7 @@ GUIDE/
 ├── trainer.py             # Training functions
 ├── data_loader.py         # Dataset loading
 ├── utils.py               # Utility functions
-├── requirements.txt       # Dependencies
+├── ../../../requirements.txt       # Consolidated dependencies
 ├── README.md              # This file
 ├── Datasets/              # Dataset directory
 │   ├── PUBLIC/           # Public datasets
@@ -302,5 +302,4 @@ We welcome contributions! Please see our contributing guidelines:
 3. Make your changes
 4. Add tests if applicable
 5. Submit a pull request
-
 

@@ -1,0 +1,21 @@
+name: gcastle_all_17
+methods:
+  - PC-Stable
+  - PC-Parallel
+  - ANM-GPR
+  - ANM-GPR-Kernel
+  - Direct-LiNGAM
+  - ICA-LiNGAM
+  - PNL
+  - GES
+  - Notear-Linear
+  - Notear-NonLinear
+  - Notear-Lowrank
+  - DAG-GNN
+  - GOLEM
+  - GraNDAG
+  - MCSL
+  - GAE
+  - RL
+time_limit: 3600
+skip_existing: false

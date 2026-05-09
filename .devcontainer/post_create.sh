@@ -13,98 +13,87 @@ fi
 export SKLEARN_ALLOW_DEPRECATED_SKLEARN_PACKAGE_INSTALL=True
 uv sync --dev --frozen
 
-if [ -d "$REPO_ROOT/.git" ] && uv run python -c "import importlib.util; import sys; sys.exit(0 if importlib.util.find_spec('pre_commit') else 1)"; then
+if [ -d "$REPO_ROOT/.git" ] && [ -f "$REPO_ROOT/.pre-commit-config.yaml" ] && uv run python -c "import importlib.util; import sys; sys.exit(0 if importlib.util.find_spec('pre_commit') else 1)"; then
   uv run pre-commit install --install-hooks
 fi
+export PYTHONPATH="${PYTHONPATH:-}:$REPO_ROOT"
+export KMP_DUPLICATE_LIB_OK=TRUE
 
-eval "$(
-  uv run python - "$CONFIG_PATH" <<'PY'
-import shlex
-import sys
-from pathlib import Path
+PYTHON_EXEC=${PYTHON_EXEC:-"uv run python"}
+REPORTS_DIR=${REPORTS_DIR:-$REPO_ROOT/reports}
+OUTPUTS_DIR=${OUTPUTS_DIR:-$REPORTS_DIR/outputs}
+RUN_SCRIPTS_DIR="${RUN_SCRIPTS_DIR:-$REPO_ROOT/experiment-config/run}"
+POST_CREATE_TIMEOUT="${POST_CREATE_TIMEOUT:-1h}"
+DONE_DIR="${DONE_DIR:-$REPORTS_DIR/.post_create_done}"
 
-import yaml
-
-config_path = Path(sys.argv[1]).expanduser().resolve()
-config = yaml.safe_load(config_path.read_text(encoding="utf-8"))
-
-runtime = config.get("runtime", {}) or {}
-methods = config.get("methods", {}) or {}
-
-def emit(name: str, value) -> None:
-    if isinstance(value, bool):
-        value = "TRUE" if value else "FALSE"
-    print(f'export {name}={shlex.quote(str(value))}')
-
-python_exec = runtime.get("python_exec", "python3")
-emit("PYTHON_EXEC", f"uv run {python_exec}")
-emit("REPORTS_DIR", runtime.get("reports_dir", str(config_path.parent.parent / "reports")))
-emit("OUTPUTS_DIR", runtime.get("outputs_dir", str(config_path.parent.parent / "reports" / "outputs")))
-emit("TRACKING", config.get("tracking", "mlflow"))
-emit("PLOT", config.get("plot", False))
-emit("PLOT_DPI", config.get("plot_dpi", 300))
-emit("SKIP_FIRST", config.get("skip_first", 0))
-
-if runtime.get("kmp_duplicate_lib_ok", False):
-    emit("KMP_DUPLICATE_LIB_OK", True)
-
-for method_name, method_cfg in methods.items():
-    if not isinstance(method_cfg, dict):
-        continue
-    prefix = method_name.upper()
-    if "enabled" in method_cfg:
-        emit(f"{prefix}_ENABLED", method_cfg["enabled"])
-    if "problem" in method_cfg:
-        emit(f"{prefix}_PROBLEM", method_cfg["problem"])
-    if "output_dir" in method_cfg:
-        emit(f"{prefix}_OUTPUT_DIR", method_cfg["output_dir"])
-    for key, value in method_cfg.items():
-        if key in {"enabled", "problem", "output_dir"}:
-            continue
-        emit(f"{prefix}_{key.upper()}", value)
-PY
-)"
-
-run_summary() {
-  problem="$1"
-  methods="$2"
-  uv run python "$REPO_ROOT/scripts/utils/problem_benchmark.py" \
-    --problem "$problem" \
-    --methods "$methods" \
-    --skip-run \
-    --output-dir "$REPORTS_DIR"
+has_file() {
+  local path="$1"
+  [ -e "$path" ] && [ -s "$path" ]
 }
 
-if [ "${DATAASSIST_ENABLED:-FALSE}" = "TRUE" ]; then
-  OUTPUT_DIR="${DATAASSIST_OUTPUT_DIR}" sh "$REPO_ROOT/experiment-config/run/run_DataAssist.sh"
-  run_summary "${DATAASSIST_PROBLEM}" "DataAssist"
-fi
+run_with_timeout() {
+  local timeout_spec="$1"
+  local script_path="$2"
+  TIMEOUT_SPEC="$timeout_spec" SCRIPT_PATH="$script_path" python3 - <<'PY'
+import os
+import re
+import subprocess
+import sys
 
-if [ "${GUIDE_ENABLED:-FALSE}" = "TRUE" ]; then
-  OUTPUT_DIR="${GUIDE_OUTPUT_DIR}" \
-  NUM_EPOCHS="${GUIDE_NUM_EPOCHS}" \
-  HIDDEN_DIM="${GUIDE_HIDDEN_DIM}" \
-  NHEADS="${GUIDE_NHEADS}" \
-  ACTOR_LR="${GUIDE_ACTOR_LR}" \
-  PRIOR_FRACTION="${GUIDE_PRIOR_FRACTION}" \
-  sh "$REPO_ROOT/experiment-config/run/run_GUIDE.sh"
-  run_summary "${GUIDE_PROBLEM}" "GUIDE"
-fi
+spec = os.environ["TIMEOUT_SPEC"].strip()
+path = os.environ["SCRIPT_PATH"]
+match = re.fullmatch(r"(\d+)([smhd]?)", spec)
+if not match:
+    print(f"Unsupported timeout specification: {spec}", file=sys.stderr)
+    sys.exit(2)
+value = int(match.group(1))
+unit = match.group(2) or "s"
+timeout_seconds = value * {"s": 1, "m": 60, "h": 3600, "d": 86400}[unit]
+try:
+    completed = subprocess.run(["bash", path], check=False, timeout=timeout_seconds)
+    sys.exit(completed.returncode)
+except subprocess.TimeoutExpired:
+    print(f"Command timed out after {spec}", file=sys.stderr)
+    sys.exit(124)
+PY
+}
 
-if [ "${KCRL_ENABLED:-FALSE}" = "TRUE" ]; then
-  OUTPUT_DIR="${KCRL_OUTPUT_DIR}" \
-  NB_EPOCH="${KCRL_NB_EPOCH}" \
-  INPUT_DIMENSION="${KCRL_INPUT_DIMENSION}" \
-  LAMBDA_ITER_NUM="${KCRL_LAMBDA_ITER_NUM}" \
-  sh "$REPO_ROOT/experiment-config/run/run_KCRL.sh"
-  run_summary "${KCRL_PROBLEM}" "KCRL"
-fi
+run_script_job() {
+  local script_path="$1"
+  local script_name
+  script_name="$(basename "$script_path")"
+  local marker="$DONE_DIR/${script_name}.done"
 
-if [ "${UNIFIEDONESHOT_ENABLED:-FALSE}" = "TRUE" ]; then
-  OUTPUT_DIR="${UNIFIEDONESHOT_OUTPUT_DIR}" \
-  ENABLED_MODELS="${UNIFIEDONESHOT_ENABLED_MODELS}" \
-  sh "$REPO_ROOT/experiment-config/run/run_UnifiedOneShot.sh"
-  run_summary "${UNIFIEDONESHOT_PROBLEM}" "UnifiedOneShot"
-fi
+  if has_file "$marker"; then
+    echo "Skipping $script_name (already done: $marker)"
+    return 0
+  fi
+
+  echo "Running $script_name"
+  if run_with_timeout "$POST_CREATE_TIMEOUT" "$script_path"; then
+    mkdir -p "$DONE_DIR"
+    : > "$marker"
+    return 0
+  fi
+
+  local status=$?
+  if [ "$status" -eq 124 ]; then
+    echo "Skipping $script_name (timed out after $POST_CREATE_TIMEOUT)"
+    return 0
+  fi
+
+  echo "$script_name failed with exit code $status" >&2
+  return 0
+}
+
+for script in "$RUN_SCRIPTS_DIR"/run_*.sh; do
+  [ -f "$script" ] || continue
+  run_script_job "$script"
+done
+
+uv run python "$REPO_ROOT/scripts/utils/problem_benchmark.py" \
+  --all-problems \
+  --skip-run \
+  --output-dir "$REPORTS_DIR"
 
 echo "Summary tables written under $REPORTS_DIR"

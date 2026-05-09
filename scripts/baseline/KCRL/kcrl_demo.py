@@ -27,6 +27,24 @@ import matplotlib
 matplotlib.use('Agg')
 
 
+def build_prior_matrix(true_graph: np.ndarray) -> np.ndarray:
+    """Build the prior matrix using KCRL's default 0/1/2 semantics.
+
+    2 means "unspecified", 1 means "required edge", and 0 means
+    "forbidden edge". The original 8-node scaffold from the upstream demo is
+    preserved when the graph shape matches (8, 8).
+    """
+    true_shape = true_graph.shape
+    prior = np.full(true_shape, 2, dtype=np.int32)
+    if true_shape == (8, 8):
+        # Preserve the original 8-node prior scaffold when the shape matches.
+        prior[6][2] = 1
+        prior[4][3] = 1
+        prior[1][5] = 0
+        prior[6][7] = 0
+    return prior
+
+
 def main():
     # Setup for output directory and logging
     output_dir = os.environ.get(
@@ -196,22 +214,9 @@ def main():
         
         max_reward_score_cyc = (lambda1_upper+1, 0, 0)
 
-        # Incorporation of existing information.
-        # Prior knowledge set formation for a graph with 8 nodes (8 x 8 adjacency matrix). 
-        # It can be changed for a graph with any number of nodes.
-        # Here prior knowledge: there is a directed edge from node 2-->6 and from 3-->4. No edge exists between nodes 5 to 1 and 7 to 6.
-        # In this code, the generated graph adjacency matrix by the encoder-decoder is transposed. 
-        # Hence for accurate comparison, the prior knowledge set is also transposed.
-        # Any number of prior edges can be used as per the experimental requirement.     
-
-        true_shape = training_set.true_graph.shape
-        a = np.full(true_shape, 2, dtype=np.int32)
-        if true_shape == (8, 8):
-            # Preserve the original 8-node prior scaffold when the shape matches.
-            a[6][2] = 1
-            a[4][3] = 1
-            a[1][5] = 0
-            a[6][7] = 0
+        # In the upstream demo the generated adjacency is transposed, so we
+        # build the prior matrix in the same orientation for comparison.
+        a = build_prior_matrix(training_set.true_graph)
         
 
         # Summary writer
@@ -320,7 +325,11 @@ def main():
                 reward_max_per_batch_re = callreward.update_scores(reward_max_per_batch, lambda1, lambda2, lambda3)
 
                 # saved somewhat more detailed logging info
-                np.save('{}/solvd_dict.npy'.format(config.graph_dir), np.array(ls_kv))
+                np.save(
+                    '{}/solvd_dict.npy'.format(config.graph_dir),
+                    np.array(ls_kv, dtype=object),
+                    allow_pickle=True,
+                )
                 pd.DataFrame(np.array(max_rewards_re)).to_csv('{}/max_rewards.csv'.format(output_dir))
                 pd.DataFrame(rewards_batches_re).to_csv('{}/rewards_batch.csv'.format(output_dir))
                 pd.DataFrame(reward_max_per_batch_re).to_csv('{}/reward_max_batch.csv'.format(output_dir))

@@ -1,5 +1,0 @@
-gpy
-scikit-learn
-numpy
-pandas
-networkx

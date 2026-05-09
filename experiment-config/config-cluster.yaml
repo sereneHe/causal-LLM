@@ -1,40 +1,102 @@
+hydra:
+  sweeper:
+    max_batch_size: 500 # There is a quota on RCI cluster that limits number of scheduled jobs to 500.
+    params:
+#      max_batch_size: 1
+      #scenario:
+      #distribution_coefficient: 1,2,3,4
+experiment: DAGS article
 tracking: mlflow
 plot: false
 plot_dpi: 300
 skip_first: 0
-
-runtime:
-  python_exec: python3
-  reports_dir: /Users/xiaoyuhe/Causal-LLM/reports
-  outputs_dir: /Users/xiaoyuhe/Causal-LLM/reports/outputs
-  kmp_duplicate_lib_ok: true
-
+all_problems: &all_problems
+  - BIAS
+  - Hepar2
+  - LEGAL
+  - Lucas
+  - Oxygen-therapy
+  - SmBFO
+  - admissions
+  - alarm
+  - asia
+  - barley
+  - bowfree_admg
+  - cds
+  - codiet
+  - codiet_restricted
+  - dream41
+  - dream42
+  - dream43
+  - dream44
+  - dynamic-er
+  - er
+  - ermag
+  - gaussian_30
+  - gaussian_50
+  - insurance
+  - krebs_cycle_1
+  - krebs_cycle_3
+  - krebs_cycle_normalised_1
+  - krebs_cycle_normalised_3
+  - mildew
+  - non_gaussian_30
+  - non_gaussian_50
+  - sachs
+  - sf
+  - water
 methods:
-  DataAssist:
+  - name: DataAssist
     enabled: true
-    problem: SmBFO
-    output_dir: /Users/xiaoyuhe/Causal-LLM/reports/outputs/DataAssist/SmBFO
+    problems: *all_problems
 
-  GUIDE:
+  - name: GUIDE
     enabled: true
-    problem: gaussian_30
-    output_dir: /Users/xiaoyuhe/Causal-LLM/reports/outputs/GUIDE/gaussian_30
-    num_epochs: 1
+    problems: *all_problems
+    num_epochs: 10
     hidden_dim: 64
     nheads: 8
     actor_lr: 0.001
     prior_fraction: 0.25
 
-  KCRL:
+  - name: KCRL
     enabled: true
-    problem: asia
-    output_dir: /Users/xiaoyuhe/Causal-LLM/reports/outputs/KCRL/asia
-    nb_epoch: 1
+    problems: *all_problems
+    nb_epoch: 10000
     input_dimension: 64
-    lambda_iter_num: 10
+    lambda_iter_num: 1000
 
-  UnifiedOneShot:
+  - name: UnifiedOneShot
     enabled: true
-    problem: asia
-    output_dir: /Users/xiaoyuhe/Causal-LLM/reports/outputs/UnifiedOneShot/asia
-    enabled_models: PC
+    problems: *all_problems
+    enabled_models:
+      - PC
+
+  - name: JunctionTreeGap
+    enabled: true
+    problems: *all_problems
+    top_k: 3
+    gap_weight: 0.5
+    sparsity_threshold: 0.0
+    edge_threshold: 0.0
+    covariance_jitter: 1e-6
+    gap_metric: sym_kl
+    separator_model: gaussian
+
+  - name: LLM_CaMML
+    enabled: true
+    problems: *all_problems
+    backend: CaMML
+    conf: 0.99999
+
+  - name: LLM_MINOBSx
+    enabled: true
+    problems: *all_problems
+    backend: MINOBSx
+    timeout: ""
+
+defaults:
+  - solver: milp
+  - problem: dynamic
+  - override hydra/launcher: configured_submitit_slurm
+  - _self_

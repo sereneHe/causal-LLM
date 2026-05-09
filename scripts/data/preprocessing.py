@@ -17,6 +17,7 @@ Raw inputs are staged under:
 from __future__ import annotations
 
 import argparse
+import sys
 import shutil
 from pathlib import Path
 from urllib.error import HTTPError, URLError
@@ -24,6 +25,25 @@ from urllib.request import urlretrieve
 
 import numpy as np
 import pandas as pd
+
+if __package__ in {None, ""}:
+    sys.path.append(str(Path(__file__).resolve().parents[2]))
+
+# Codiet is standardized through the Recommender_Pavel data bundle / knowledge graph
+# intersection flow, with a source-repo fallback when the local bundle is absent.
+# Krebs follows the benchmark's *_TS + true_graph.npz standardization path.
+from scripts.data.source_data import (
+    build_admissions_bundle,
+    build_bowfree_admg_bundle,
+    build_cds_bundle,
+    build_bn_benchmark_bundle,
+    build_dynamic_er_bundle,
+    build_er_bundle,
+    build_ermag_bundle,
+    build_sf_bundle,
+)
+from scripts.data.codiet_utils import build_codiet_bundle
+from scripts.data.krebs_utils import build_krebs_bundle
 
 
 PROJECT_ROOT = Path("/Users/xiaoyuhe/Causal-LLM")
@@ -365,6 +385,21 @@ def package_legal_family(raw_root: Path, processed_root: Path) -> list[Path]:
     return outputs
 
 
+def package_kcrl_oxygen_therapy(raw_root: Path, processed_root: Path) -> Path:
+    source_dir = BASELINE_ROOT / "KCRL" / "datasets"
+    raw_dir = raw_root / "Oxygen-therapy"
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    copy_if_missing(source_dir / "Oxygen-therapy.csv", raw_dir / "Oxygen-therapy.csv")
+    data = read_observational_csv(raw_dir / "Oxygen-therapy.csv")
+    adj = np.zeros((data.shape[1], data.shape[1]), dtype=int)
+    return CausalDiscoveryPreprocessing.save_bundle(
+        processed_root / "Oxygen-therapy",
+        x=data,
+        y=adj,
+        csv_name="Oxygen-therapy.csv",
+    )
+
+
 def package_guide_synthetic(
     dataset_name: str,
     raw_root: Path,
@@ -404,10 +439,107 @@ def run_dataset(dataset: str, raw_root: Path, processed_root: Path) -> list[Path
 
     if dataset == "SmBFO":
         return [package_smBFO(raw_root, processed_root)]
+    if dataset == "admissions":
+        return [build_admissions_bundle(raw_root, processed_root)]
+    if dataset == "bowfree_admg":
+        return [build_bowfree_admg_bundle(raw_root, processed_root, {})]
+    if dataset in {"dynamic", "dynamic-er"}:
+        return [build_dynamic_er_bundle(raw_root, processed_root, {
+            "number_of_variables": 7,
+            "number_of_samples": 100,
+            "p": 1,
+            "intra_edge_ratio": 2,
+            "inter_edge_ratio": 1,
+            "graph_type_intra": "er",
+            "graph_type_inter": "er",
+            "w_min_inter": 0.5,
+            "w_max_inter": 0.7,
+            "w_min_intra": 0.5,
+            "w_max_intra": 2.0,
+            "w_decay": 1.1,
+            "sem_type": "linear-gauss",
+            "noise_scale": 1.0,
+            "noise_scale_variance": None,
+            "seed": 1,
+        }, dataset_name=dataset)]
+    if dataset == "er":
+        return [build_er_bundle(raw_root, processed_root, {
+            "number_of_variables": 7,
+            "edge_ratio": 2,
+            "number_of_samples": 100,
+            "sem_type": "gauss",
+            "seed": 1,
+            "noise_scale": 1.0,
+            "internal_normalization": False,
+        }, dataset_name="er")]
+    if dataset == "ermag":
+        return [build_ermag_bundle(raw_root, processed_root, {
+            "number_of_variables": 7,
+            "edge_ratio": 2,
+            "number_of_samples": 100,
+            "sem_type": "gauss",
+            "seed": 1,
+            "noise_scale": 1.0,
+            "hidden_vertices_ratio": 0.2,
+        })]
+    if dataset == "sf":
+        return [build_sf_bundle(raw_root, processed_root, {
+            "number_of_variables": 7,
+            "edge_ratio": 3,
+            "number_of_samples": 100,
+            "sem_type": "gauss",
+            "seed": 3,
+            "noise_scale": 1.0,
+            "internal_normalization": False,
+        }, dataset_name="sf")]
+    if dataset == "cds":
+        return [build_cds_bundle(raw_root, processed_root, {
+            "n": 1000,
+            "p": 0,
+            "granularity": 1,
+        })]
+    if dataset == "insurance":
+        return [build_bn_benchmark_bundle(raw_root, processed_root, "insurance", n_samples=200, seed=0)]
+    if dataset == "water":
+        return [build_bn_benchmark_bundle(raw_root, processed_root, "water", n_samples=200, seed=0)]
+    if dataset == "barley":
+        return [build_bn_benchmark_bundle(raw_root, processed_root, "barley", n_samples=50, seed=0)]
+    if dataset in {"codiet", "codiet_restricted"}:
+        codiet_cfg = {
+            "data_path": str(raw_root / "codiet"),
+            "data_filename": "marks_data.feather" if dataset == "codiet" else "features.feather",
+            "knowledge_graph_filename": "knowledge_graph_intersection.graphml" if dataset == "codiet" else "codiet_re_graph_20241220_full.graphml",
+            "scale_data": "quantile09",
+            "n": None if dataset == "codiet" else 500,
+            "features": None if dataset == "codiet" else ["protein", "weight-control", "hba1c", "cholesterol", "serving-size", "starch", "vitamin-d", "dopamine", "serotonin", "caffeine", "calcium", "glucose", "zinc", "magnesium", "fruit"],
+            "target": "CRP (mg/dL)" if dataset == "codiet" else "Diastolic Blood Pressure (mm Hg)",
+        }
+        return [build_codiet_bundle(raw_root, processed_root, codiet_cfg, output_name=dataset)]
+    if dataset in {
+        "krebs",
+        "krebs_cycle_1",
+        "krebs_cycle_3",
+        "krebs_cycle_normalised_1",
+        "krebs_cycle_normalised_3",
+    }:
+        krebs_variant = {
+            "krebs": "krebs_cycle_3",
+            "krebs_cycle_1": "krebs_cycle_1",
+            "krebs_cycle_3": "krebs_cycle_3",
+            "krebs_cycle_normalised_1": "krebs_cycle_normalised_1",
+            "krebs_cycle_normalised_3": "krebs_cycle_normalised_3",
+        }[dataset]
+        return [build_krebs_bundle(raw_root, processed_root, {
+            "variant": krebs_variant,
+            "measurements": 10,
+            "output_name": dataset,
+        })]
     if dataset == "BIAS":
         return package_bias_family(raw_root, processed_root)
     if dataset == "LEGAL":
         return package_legal_family(raw_root, processed_root)
+    if dataset == "Oxygen-therapy":
+        return [package_kcrl_oxygen_therapy(raw_root, processed_root)]
     if dataset == "gaussian_30":
         return [package_guide_synthetic(dataset, raw_root, processed_root, "gaussian_30nodes.csv", "adj_matrix_30nodes_linear.csv")]
     if dataset == "gaussian_50":

@@ -4,7 +4,7 @@ from causal_llm import CausalDiscoveryLLM
 import pandas as pd
 from config_models import config
 
-def initialize_models(input_dim, enabled_models=None):
+def initialize_models(input_dim, enabled_models=None, causal_llm_backbone=None):
     models = {}
     enabled = set(enabled_models) if enabled_models else set(config.keys())
 
@@ -15,7 +15,8 @@ def initialize_models(input_dim, enabled_models=None):
         models["causal_llm"] = CausalDiscoveryLLM(
             input_dim=input_dim,
             output_dim=output_dim,
-            model_path=causal_llm_config["model_path"]
+            model_path=causal_llm_config["model_path"],
+            backbone=causal_llm_backbone or causal_llm_config.get("backbone", "Llama"),
         )
 
     # Initialize GraNDAG if present in config
